@@ -424,6 +424,13 @@
 (function(){
   'use strict';
 
+  // 動作確認用（画面には出ません）
+  try{
+    window.__errors = [];
+    window.addEventListener('error', function(ev){ window.__errors.push(String(ev.message || ev.error)); });
+    window.addEventListener('unhandledrejection', function(ev){ window.__errors.push('rejection:' + String(ev.reason)); });
+  }catch(e){}
+
   var STORAGE_KEY = 'moving-savings-v1';
   var SYNC_KEY = 'moving-savings-sync-v1';
   var SEL_KEY = 'moving-savings-who-v1';
