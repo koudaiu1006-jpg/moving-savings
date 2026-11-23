@@ -262,11 +262,11 @@
   <div class="head-in">
     <div class="brand">
       <svg class="corgi" viewBox="0 0 80 80" aria-hidden="true">
-        <path d="M13 34 C7 21 8 9 14 6 C22 10 30 19 33 29 Z" fill="#dd8b28"/>
-        <path d="M13 34 C9 24 10 14 14 11 C19 15 25 23 27 31 Z" fill="#f7c68e"/>
-        <path d="M67 34 C73 21 72 9 66 6 C58 10 50 19 47 29 Z" fill="#dd8b28"/>
-        <path d="M67 34 C71 24 70 14 66 11 C61 15 55 23 53 31 Z" fill="#f7c68e"/>
-        <ellipse cx="40" cy="45" rx="27" ry="24" fill="#f0a13c"/>
+        <path d="M19 35 L12 6 L35 21 Z" fill="#dd8b28"/>
+        <path d="M20.5 30 L16.5 13 L29 22 Z" fill="#f7c68e"/>
+        <path d="M61 35 L68 6 L45 21 Z" fill="#dd8b28"/>
+        <path d="M59.5 30 L63.5 13 L51 22 Z" fill="#f7c68e"/>
+        <ellipse cx="40" cy="45" rx="26" ry="24" fill="#f0a13c"/>
         <path d="M40 23 C34 32 34 42 36 53 L44 53 C46 42 46 32 40 23 Z" fill="#fff8ee"/>
         <ellipse cx="40" cy="55" rx="17" ry="12" fill="#fff8ee"/>
         <ellipse cx="29" cy="41" rx="3.9" ry="4.8" fill="#402617"/>
@@ -320,7 +320,7 @@
       </div>
       <div class="hero-main">
         <div class="hero-cap">いま貯まっているのは</div>
-        <div class="hero-total"><span class="y">¥</span><b id="totalText">0</b><span class="u">円</span></div>
+        <div class="hero-total"><span class="y">¥</span><b id="totalText">0</b></div>
         <div class="hero-goal">目標 <span id="goalText">400,000</span>円</div>
         <div class="hero-rem" id="remainBox">あと <span id="remainText">400,000</span> 円！</div>
       </div>
@@ -436,6 +436,7 @@
   var SEL_KEY = 'moving-savings-who-v1';
   var GIST_FILE = 'moving-savings.json';
   var DEFAULT_GOAL = 400000;
+  var DEFAULT_MILESTONES = [{ id:'mile-1225', date:'2026-12-25', label:'内見予定' }];
   var MEMO_MAX = 40;
 
   var PEOPLE = {
@@ -445,9 +446,11 @@
 
   var CORGI_AVATAR =
     '<svg viewBox="0 0 80 80" aria-hidden="true">' +
-      '<path d="M13 34 C7 21 8 9 14 6 C22 10 30 19 33 29 Z" fill="#dd8b28"/>' +
-      '<path d="M67 34 C73 21 72 9 66 6 C58 10 50 19 47 29 Z" fill="#dd8b28"/>' +
-      '<ellipse cx="40" cy="45" rx="27" ry="24" fill="#f0a13c"/>' +
+      '<path d="M19 35 L12 6 L35 21 Z" fill="#dd8b28"/>' +
+      '<path d="M20.5 30 L16.5 13 L29 22 Z" fill="#f7c68e"/>' +
+      '<path d="M61 35 L68 6 L45 21 Z" fill="#dd8b28"/>' +
+      '<path d="M59.5 30 L63.5 13 L51 22 Z" fill="#f7c68e"/>' +
+      '<ellipse cx="40" cy="45" rx="26" ry="24" fill="#f0a13c"/>' +
       '<path d="M40 23 C34 32 34 42 36 53 L44 53 C46 42 46 32 40 23 Z" fill="#fff8ee"/>' +
       '<ellipse cx="40" cy="55" rx="17" ry="12" fill="#fff8ee"/>' +
       '<ellipse cx="29" cy="41" rx="3.9" ry="4.8" fill="#402617"/>' +
@@ -546,6 +549,9 @@
       }).map(function(m){
         return { id: (typeof m.id === 'string' && m.id) ? m.id : uid(), date: m.date, label: String(m.label || '').slice(0, 24) };
       });
+    }
+    if(!out.msAt && out.milestones.length === 0){
+      out.milestones = DEFAULT_MILESTONES.map(function(m){ return { id:m.id, date:m.date, label:m.label }; });
     }
     if(Array.isArray(data.deleted)){
       out.deleted = data.deleted.filter(function(x){ return typeof x === 'string'; });
@@ -918,8 +924,8 @@
   function renderSplit(){
     var t = totals();
     var denom = t.all > 0 ? t.all : 1;
-    var pk = t.all > 0 ? (t.koudai / denom * 100) : 50;
-    var ph = t.all > 0 ? (t.hong / denom * 100) : 50;
+    var pk = t.all > 0 ? (t.koudai / denom * 100) : 0;
+    var ph = t.all > 0 ? (t.hong / denom * 100) : 0;
     el.splitK.style.width = pk + '%';
     el.splitH.style.width = ph + '%';
     el.amtK.textContent = yen(t.koudai);
@@ -1168,6 +1174,9 @@
 
   initSyncConfig();
   loadLocal();
+  if(!state.msAt && (!state.milestones || state.milestones.length === 0)){
+    state.milestones = DEFAULT_MILESTONES.map(function(m){ return { id:m.id, date:m.date, label:m.label }; });
+  }
   renderAll();
   if(hasSync()) pullSync(true);
   else setSyncStatus('', '☁️ GitHub未連携');
