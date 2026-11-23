@@ -12,6 +12,8 @@
 <meta name="description" content="耕大さんと虹さんの「初期費用と引っ越し費用で目指せ40万円」をふたりで記録する共有貯金カウンター。金額をワンタップで記録し、達成率とふたりの貢献額がひと目でわかります。">
 <title>🏠 目指せ40万円！引越し貯金カウンター</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23fdf1e1'/%3E%3Cpath d='M32 12 L54 30 L48 30 L48 52 L16 52 L16 30 L10 30 Z' fill='%23f0982f'/%3E%3Ccircle cx='32' cy='38' r='6' fill='%23fff8ee'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-180.png">
 <style>
   :root{
     --bg:#fdf6ec;
@@ -945,7 +947,10 @@
     el.quickGrid.innerHTML = html;
     el.submitBtn.className = 'submit' + (selectedWho === 'hong' ? ' h' : '');
     Array.prototype.forEach.call(el.whoSeg.querySelectorAll('button'), function(b){
-      b.classList.toggle('on', b.getAttribute('data-who') === selectedWho);
+      var on = b.getAttribute('data-who') === selectedWho;
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.setAttribute('aria-label', PEOPLE[b.getAttribute('data-who')].name + 'の記録を追加');
     });
   }
 
