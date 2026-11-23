@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7b267">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="引越し貯金">
+<meta name="format-detection" content="telephone=no">
+<meta name="description" content="耕大さんと虹さんの「初期費用と引っ越し費用で目指せ40万円」をふたりで記録する共有貯金カウンター。金額をワンタップで記録し、達成率とふたりの貢献額がひと目でわかります。">
+<title>🏠 目指せ40万円！引越し貯金カウンター</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23fdf1e1'/%3E%3Cpath d='M32 12 L54 30 L48 30 L48 52 L16 52 L16 30 L10 30 Z' fill='%23f0982f'/%3E%3Ccircle cx='32' cy='38' r='6' fill='%23fff8ee'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#fdf6ec;
+    --card:#ffffff;
+    --ink:#3d2a1b;
+    --ink2:#7a6353;
+    --muted:#a9988a;
+    --line:#f1e3d3;
+    --cream:#fdf1e1;
+    --orange:#f0982f;
+    --orange-d:#d97f16;
+    --orange-l:#ffd8a3;
+    --pink:#ef7fa8;
+    --pink-d:#d9608c;
+    --pink-l:#ffd3e2;
+    --green:#54b37a;
+    --green-d:#3d9660;
+    --radius:24px;
+    --shadow:0 10px 26px rgba(120,80,40,.09), 0 2px 4px rgba(120,80,40,.05);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",system-ui,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(760px 380px at 92% -120px, #ffe6c4 0%, rgba(255,230,196,0) 68%),
+      radial-gradient(620px 340px at -20% 12%, #ffe3ec 0%, rgba(255,227,236,0) 62%),
+      linear-gradient(#fffaf3, #fdf3e6 62%, #fdf6ec);
+    background-attachment:fixed;
+    -webkit-text-size-adjust:100%;
+    line-height:1.5;
+    min-height:100vh;
+    overscroll-behavior-y:contain;
+  }
+  .wrap{max-width:480px; margin:0 auto; padding:0 14px calc(28px + env(safe-area-inset-bottom));}
+
+  /* header */
+  .head{position:sticky; top:0; z-index:30; padding:9px 0 8px;
+        background:linear-gradient(to bottom, rgba(253,246,236,.97) 62%, rgba(253,246,236,.72));
+        backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+        border-bottom:1px solid rgba(241,227,211,.85);}
+  .head-in{max-width:480px; margin:0 auto; padding:0 14px; display:flex; align-items:center; gap:10px;}
+  .brand{flex:1 1 auto; min-width:0; display:flex; align-items:center; gap:8px;}
+  .brand .corgi{width:34px; height:34px; flex:0 0 auto;}
+  .brand h1{font-size:15.5px; margin:0; letter-spacing:.01em; white-space:nowrap; line-height:1.25;}
+  .brand .sub{font-size:10.5px; color:var(--muted); margin:1px 0 0; letter-spacing:.04em;}
+  .icon-btn{flex:0 0 auto; border:1px solid var(--line); background:#fff; color:var(--ink2);
+        width:38px; height:38px; border-radius:50%; font-size:16px; cursor:pointer;
+        box-shadow:0 2px 6px rgba(120,80,40,.06); display:flex; align-items:center; justify-content:center;}
+  .icon-btn:active{transform:scale(.95);}
+
+  /* sync bar */
+  .sync-bar{margin-top:11px; display:flex; align-items:center; gap:8px;
+            background:#fff; border:1px solid var(--line); border-radius:14px; padding:7px 10px 7px 12px;
+            font-size:11.5px; font-weight:700; color:var(--ink2); box-shadow:0 2px 6px rgba(120,80,40,.04);}
+  .sync-status{display:flex; align-items:center; gap:5px; min-width:0; flex:1 1 auto;
+            overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .sync-status.ok{color:var(--green-d);}
+  .sync-status.busy{color:#c07a12;}
+  .sync-status.err{color:#d4485c;}
+  .sync-btn{flex:0 0 auto; border:1px solid var(--line); background:#fdf6ec; color:var(--ink2);
+            border-radius:10px; padding:4px 9px; font-size:11px; font-weight:800; font-family:inherit; cursor:pointer;}
+  .sync-btn:active{transform:scale(.97);}
+
+  /* hero */
+  .hero{margin-top:12px; background:linear-gradient(140deg,#fff4e2 0%,#ffe8cf 48%,#ffdcc6 100%);
+        border:1px solid #ffe2c2; border-radius:var(--radius); padding:16px 15px 14px;
+        box-shadow:0 12px 28px rgba(240,152,47,.16); position:relative; overflow:hidden;}
+  .hero::before{content:""; position:absolute; right:-46px; top:-56px; width:170px; height:170px; border-radius:50%;
+        background:rgba(255,255,255,.42);}
+  .hero::after{content:"🐾"; position:absolute; right:14px; bottom:8px; font-size:16px; opacity:.35; transform:rotate(-16deg);}
+  .hero-top{display:flex; align-items:center; gap:14px; position:relative;}
+  .ring{width:112px; height:112px; flex:0 0 auto; display:block;}
+  .ring-label{position:absolute; left:0; top:0; width:112px; height:112px; display:flex; align-items:center; justify-content:center;
+        flex-direction:column; pointer-events:none;}
+  .ring-wrap{position:relative; width:112px; height:112px; flex:0 0 auto;}
+  .ring-label b{font-size:27px; font-weight:900; letter-spacing:-.02em; font-variant-numeric:tabular-nums; line-height:1;}
+  .ring-label span{font-size:10.5px; font-weight:800; color:var(--ink2); margin-top:2px; letter-spacing:.06em;}
+  .hero-main{flex:1 1 auto; min-width:0;}
+  .hero-cap{font-size:10.5px; font-weight:800; color:#a3733d; letter-spacing:.1em;}
+  .hero-total{display:flex; align-items:baseline; gap:2px; margin-top:1px;}
+  .hero-total .y{font-size:16px; font-weight:800; color:var(--ink2);}
+  .hero-total b{font-size:31px; font-weight:900; letter-spacing:-.03em; font-variant-numeric:tabular-nums; line-height:1.1;}
+  .hero-total .u{font-size:13px; font-weight:800; color:var(--ink2);}
+  .hero-goal{font-size:11.5px; font-weight:700; color:#8d7358; margin-top:3px;}
+  .hero-rem{margin-top:7px; display:inline-flex; align-items:center; gap:4px; background:rgba(255,255,255,.75);
+        border-radius:999px; padding:4px 11px; font-size:12.5px; font-weight:900; color:var(--orange-d);}
+  .hero-rem.done{color:var(--green-d);}
+  .miles{display:flex; gap:6px; flex-wrap:wrap; margin-top:12px; position:relative;}
+  .mile{background:rgba(255,255,255,.82); border:1px solid rgba(255,255,255,.9); border-radius:11px; padding:5px 9px;
+        font-size:11px; font-weight:800; color:#8a6a4a; display:flex; align-items:center; gap:5px; box-shadow:0 2px 5px rgba(150,100,50,.06);}
+  .mile i{font-style:normal; color:var(--pink-d);}
+  .pace{margin-top:9px; font-size:11.5px; font-weight:700; color:#9a7c5f; position:relative; line-height:1.5;}
+  .pace b{color:var(--orange-d); font-weight:900;}
+
+  /* card */
+  .card{margin-top:12px; background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+        border:1px solid rgba(255,255,255,.9); padding:14px 15px;}
+  .card h2{font-size:12.5px; margin:0; letter-spacing:.06em; color:var(--ink2); font-weight:900;}
+
+  /* split */
+  .splitbar{height:12px; border-radius:999px; background:#f6ead9; margin:11px 0 11px; display:flex; overflow:hidden;}
+  .splitbar i{display:block; height:100%; transition:width .3s ease;}
+  .splitbar .k{background:linear-gradient(90deg,#ffbe6a,#f0982f);}
+  .splitbar .h{background:linear-gradient(90deg,#ffa9c6,#ef7fa8);}
+  .prows{display:flex; flex-direction:column; gap:8px;}
+  .prow{display:flex; align-items:center; gap:9px;}
+  .pav{width:32px; height:32px; flex:0 0 auto; border-radius:50%; display:flex; align-items:center; justify-content:center; overflow:hidden;}
+  .pav.k{background:#fff1dc;}
+  .pav.h{background:#ffe9f1;}
+  .pav svg{width:26px; height:26px;}
+  .prow .nm{flex:1 1 auto; min-width:0; display:flex; align-items:baseline; gap:5px;}
+  .prow .nm b{font-size:13.5px; font-weight:900;}
+  .prow .nm span{font-size:10.5px; color:var(--muted); font-weight:700;}
+  .prow .amt{font-size:17px; font-weight:900; font-variant-numeric:tabular-nums; letter-spacing:-.01em;}
+  .prow.k .amt{color:var(--orange-d);}
+  .prow.h .amt{color:var(--pink-d);}
+  .prow .pc{font-size:10.5px; color:var(--muted); font-weight:800; width:36px; text-align:right;}
+
+  /* add */
+  .seg{display:flex; gap:6px; background:#fdf3e7; border-radius:16px; padding:4px;}
+  .seg button{flex:1 1 0; border:0; background:transparent; border-radius:13px; padding:9px 4px; font-family:inherit;
+        font-size:14px; font-weight:900; color:var(--ink2); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:5px;
+        transition:background .15s ease, color .15s ease, box-shadow .15s ease;}
+  .seg button .pav{width:22px; height:22px;}
+  .seg button .pav svg{width:19px; height:19px;}
+  .seg button.on{background:#fff; box-shadow:0 3px 9px rgba(150,100,50,.12); color:var(--ink);}
+  .seg button.on[data-who="koudai"]{color:var(--orange-d);}
+  .seg button.on[data-who="hong"]{color:var(--pink-d);}
+
+  .quick{display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin-top:11px;}
+  .qbtn{border:1px solid var(--line); background:#fffdfa; border-radius:15px; padding:12px 2px; font-family:inherit;
+        font-size:14px; font-weight:900; color:var(--ink); cursor:pointer; letter-spacing:-.01em;
+        box-shadow:0 2px 5px rgba(150,100,50,.05); transition:transform .09s ease, background .12s ease;}
+  .qbtn:active{transform:scale(.96); background:#fff4e6;}
+  .qbtn.k{border-color:#ffd9ab; color:var(--orange-d); background:#fff8ee;}
+  .qbtn.k:active{background:#ffefd8;}
+  .qbtn.h{border-color:#ffcada; color:var(--pink-d); background:#fff7fa;}
+  .qbtn.h:active{background:#ffecf3;}
+  .qbtn.wide{grid-column:span 3; padding:9px; font-size:12px; font-weight:800; color:var(--ink2); background:#fdf6ec;}
+
+  .freeform{margin-top:11px; display:flex; flex-direction:column; gap:8px;}
+  .field{display:flex; align-items:center; gap:8px; background:#fdf8f1; border:1px solid var(--line); border-radius:15px; padding:0 12px;}
+  .field .pre{font-size:15px; font-weight:900; color:var(--muted);}
+  .field input{flex:1 1 auto; min-width:0; border:0; background:transparent; font-family:inherit; font-size:16px;
+        font-weight:800; color:var(--ink); padding:13px 0; outline:none;}
+  .field input::placeholder{font-weight:700; color:#c0b0a1;}
+  .memo-row{display:flex; gap:8px;}
+  .memo-row .field{flex:1 1 auto;}
+  .memo-row input{font-size:15px; font-weight:700;}
+  .submit{border:0; border-radius:16px; padding:14px 16px; font-family:inherit; font-size:15px; font-weight:900;
+        color:#fff; background:linear-gradient(135deg,#ffb257,#ef8f28); cursor:pointer; letter-spacing:.03em;
+        box-shadow:0 8px 18px rgba(240,152,47,.3); transition:transform .09s ease, filter .12s ease; white-space:nowrap;}
+  .submit:active{transform:scale(.975); filter:brightness(.97);}
+  .submit.h{background:linear-gradient(135deg,#ffa3c0,#ea709c); box-shadow:0 8px 18px rgba(239,127,168,.3);}
+
+  /* history */
+  .hist-head{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+  .undo{border:1px solid var(--line); background:#fff; color:var(--ink2); border-radius:999px; padding:7px 12px;
+        font-size:11.5px; font-weight:800; font-family:inherit; cursor:pointer;}
+  .undo:active{transform:scale(.97);}
+  .undo:disabled{opacity:.35; cursor:default;}
+  .daygroup{margin-top:12px;}
+  .daylabel{font-size:11px; font-weight:900; color:var(--muted); letter-spacing:.04em; display:flex; justify-content:space-between;}
+  .daylabel span{font-weight:800;}
+  .erow{display:flex; align-items:center; gap:9px; padding:9px 0; border-bottom:1px dashed #f3e7d8;}
+  .erow:last-child{border-bottom:0;}
+  .erow .pav{width:28px; height:28px;}
+  .erow .pav svg{width:23px; height:23px;}
+  .erow .mid{flex:1 1 auto; min-width:0; overflow:hidden;}
+  .erow .who{font-size:10px; font-weight:900; letter-spacing:.02em;}
+  .erow.k .who{color:var(--orange-d);}
+  .erow.h .who{color:var(--pink-d);}
+  .erow .memo{font-size:11.5px; color:var(--muted); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .erow .val{font-size:15.5px; font-weight:900; font-variant-numeric:tabular-nums; letter-spacing:-.01em; white-space:nowrap;}
+  .erow .val.add{color:var(--ink);}
+  .erow .time{font-size:10px; color:#bcab9c; font-weight:800; width:36px; text-align:right; flex:0 0 auto;}
+  .erow .del{border:0; background:transparent; color:#d9c6b4; font-size:15px; font-weight:900; padding:4px 2px 4px 6px; cursor:pointer; font-family:inherit;}
+  .erow .del:active{color:#d4485c;}
+  .empty{padding:18px 8px 12px; text-align:center; color:var(--ink2); font-size:12.5px; line-height:1.8;}
+  .empty b{display:block; font-size:13.5px; color:var(--ink); margin-bottom:3px;}
+  .footnote{margin-top:16px; text-align:center; font-size:10.5px; color:var(--muted); line-height:1.75;}
+  .footnote b{color:var(--ink2);}
+
+  /* toast */
+  .toast{position:fixed; left:50%; bottom:calc(18px + env(safe-area-inset-bottom)); transform:translate(-50%,20px);
+         background:rgba(60,38,22,.94); color:#fff; font-size:12.5px; font-weight:700; padding:10px 15px; border-radius:999px;
+         opacity:0; pointer-events:none; transition:opacity .18s ease, transform .18s ease; z-index:60; max-width:86vw; text-align:center;
+         box-shadow:0 8px 24px rgba(60,38,22,.28);}
+  .toast.show{opacity:1; transform:translate(-50%,0);}
+
+  /* modal */
+  .backdrop{position:fixed; inset:0; background:rgba(60,40,25,.4); display:flex; align-items:flex-start; justify-content:center;
+            padding:max(18px, env(safe-area-inset-top)) 16px 18px; z-index:70; overflow:auto; animation:fadein .15s ease;}
+  .backdrop[hidden]{display:none;}
+  @keyframes fadein{from{opacity:0;} to{opacity:1;}}
+  .modal{background:#fff; border-radius:22px; padding:18px 16px 16px; width:100%; max-width:400px; margin:auto;
+         box-shadow:0 22px 50px rgba(60,40,25,.26); animation:mup .18s ease;}
+  @keyframes mup{from{transform:translateY(10px) scale(.99); opacity:.6;} to{transform:none; opacity:1;}}
+  .modal h2{font-size:15px; margin:0 0 4px;}
+  .modal .hint{font-size:11.5px; color:var(--muted); margin:0 0 12px; line-height:1.6;}
+  .sec{border-top:1px solid var(--line); padding-top:12px; margin-top:12px;}
+  .sec:first-of-type{border-top:0; padding-top:0; margin-top:8px;}
+  .sec h3{font-size:12.5px; margin:0 0 8px; color:var(--ink2); letter-spacing:.04em;}
+  .mrow{display:flex; gap:6px; align-items:center; margin-bottom:7px;}
+  .mrow input[type=date]{flex:0 0 auto; width:135px; border:1px solid var(--line); border-radius:11px; padding:9px 8px;
+        font-family:inherit; font-size:12.5px; color:var(--ink); background:#fdf8f1; outline:none;}
+  .mrow input[type=text],.mrow input[type=password]{flex:1 1 auto; min-width:0; border:1px solid var(--line); border-radius:11px;
+        padding:9px 10px; font-family:inherit; font-size:13px; color:var(--ink); background:#fdf8f1; outline:none;}
+  .mrow .xbtn{border:1px solid var(--line); background:#fff; color:#c48b8b; border-radius:10px; width:34px; height:36px; flex:0 0 auto;
+        font-size:14px; font-weight:900; cursor:pointer; font-family:inherit;}
+  .goalrow{display:flex; align-items:center; gap:8px;}
+  .goalrow input{flex:1 1 auto; border:1px solid var(--line); border-radius:12px; padding:11px 12px; font-family:inherit;
+        font-size:15px; font-weight:800; color:var(--ink); background:#fdf8f1; outline:none;}
+  .goalrow span{font-size:13px; font-weight:800; color:var(--ink2);}
+  .addmile{border:1px dashed #e6cdb2; background:#fffaf4; color:#a8815a; border-radius:11px; padding:8px 10px; width:100%;
+        font-family:inherit; font-size:11.5px; font-weight:800; cursor:pointer; margin-top:2px;}
+  .sync-actions{display:flex; gap:6px; margin-top:8px;}
+  .sync-actions button{flex:1 1 0; border:1px solid var(--line); background:#fdf6ec; color:var(--ink2); border-radius:11px;
+        padding:10px 4px; font-size:11.5px; font-weight:800; font-family:inherit; cursor:pointer;}
+  .mbtns{display:flex; gap:8px; margin-top:16px;}
+  .mbtns button{flex:1 1 0; border:0; border-radius:14px; padding:13px; font-family:inherit; font-size:14.5px; font-weight:900; cursor:pointer;}
+  .mbtns .cancel{background:#f6ece0; color:var(--ink2);}
+  .mbtns .ok{background:linear-gradient(135deg,#ffb257,#ef8f28); color:#fff; box-shadow:0 8px 18px rgba(240,152,47,.26);}
+
+  /* confetti */
+  .confetti{position:fixed; inset:0; pointer-events:none; z-index:65; overflow:hidden;}
+  .confetti i{position:absolute; top:-12vh; font-size:16px; animation:fall linear forwards;}
+  @keyframes fall{to{transform:translateY(112vh) rotate(420deg); opacity:.9;}}
+
+  @media (max-width:370px){
+    .brand h1{font-size:14.5px;}
+    .hero-total b{font-size:27px;}
+    .ring,.ring-wrap,.ring-label{width:100px; height:100px;}
+    .ring-label b{font-size:24px;}
+    .qbtn{font-size:13px; padding:11px 1px;}
+    .prow .amt{font-size:15.5px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none !important; transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header class="head">
+  <div class="head-in">
+    <div class="brand">
+      <svg class="corgi" viewBox="0 0 80 80" aria-hidden="true">
+        <path d="M13 34 C7 21 8 9 14 6 C22 10 30 19 33 29 Z" fill="#dd8b28"/>
+        <path d="M13 34 C9 24 10 14 14 11 C19 15 25 23 27 31 Z" fill="#f7c68e"/>
+        <path d="M67 34 C73 21 72 9 66 6 C58 10 50 19 47 29 Z" fill="#dd8b28"/>
+        <path d="M67 34 C71 24 70 14 66 11 C61 15 55 23 53 31 Z" fill="#f7c68e"/>
+        <ellipse cx="40" cy="45" rx="27" ry="24" fill="#f0a13c"/>
+        <path d="M40 23 C34 32 34 42 36 53 L44 53 C46 42 46 32 40 23 Z" fill="#fff8ee"/>
+        <ellipse cx="40" cy="55" rx="17" ry="12" fill="#fff8ee"/>
+        <ellipse cx="29" cy="41" rx="3.9" ry="4.8" fill="#402617"/>
+        <ellipse cx="51" cy="41" rx="3.9" ry="4.8" fill="#402617"/>
+        <circle cx="30.2" cy="39.2" r="1.3" fill="#fff"/>
+        <circle cx="52.2" cy="39.2" r="1.3" fill="#fff"/>
+        <ellipse cx="40" cy="50.5" rx="4.6" ry="3.4" fill="#3b2416"/>
+        <path d="M40 54.5 L40 57.5 M40 57.5 C37 61 33.5 60 32 58 M40 57.5 C43 61 46.5 60 48 58"
+              stroke="#3b2416" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+        <path d="M36.6 62.5 Q40 67.5 43.4 62.5 Z" fill="#f47b93"/>
+      </svg>
+      <div>
+        <h1>目指せ40万円！</h1>
+        <p class="sub">引越し貯金カウンター</p>
+      </div>
+    </div>
+    <button class="icon-btn" id="settingsBtn" type="button" aria-label="設定">⚙️</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="sync-bar" id="syncBar">
+    <span class="sync-status" id="syncStatus">☁️ GitHub未連携</span>
+    <button class="sync-btn" id="syncRefreshBtn" type="button">↻ 最新</button>
+    <button class="sync-btn" id="syncCfgBtn" type="button">同期設定</button>
+  </div>
+
+  <section class="hero" aria-label="現在の貯金額と達成率">
+    <div class="hero-top">
+      <div class="ring-wrap">
+        <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+          <defs>
+            <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#ffc46b"/>
+              <stop offset="1" stop-color="#ef8b2e"/>
+            </linearGradient>
+            <linearGradient id="ringGradDone" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#8fdca9"/>
+              <stop offset="1" stop-color="#4aa86f"/>
+            </linearGradient>
+          </defs>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#f8e6cd" stroke-width="12"/>
+          <circle id="ringArc" cx="60" cy="60" r="50" fill="none" stroke="url(#ringGrad)" stroke-width="12"
+                  stroke-linecap="round" stroke-dasharray="314.16" stroke-dashoffset="314.16"
+                  transform="rotate(-90 60 60)"/>
+        </svg>
+        <div class="ring-label">
+          <b id="pctText">0</b><span>達成率 %</span>
+        </div>
+      </div>
+      <div class="hero-main">
+        <div class="hero-cap">いま貯まっているのは</div>
+        <div class="hero-total"><span class="y">¥</span><b id="totalText">0</b><span class="u">円</span></div>
+        <div class="hero-goal">目標 <span id="goalText">400,000</span>円</div>
+        <div class="hero-rem" id="remainBox">あと <span id="remainText">400,000</span> 円！</div>
+      </div>
+    </div>
+    <div class="miles" id="mileRow"></div>
+    <div class="pace" id="paceLine"></div>
+  </section>
+
+  <section class="card" aria-label="ふたりの貢献額">
+    <h2>ふたりの貢献</h2>
+    <div class="splitbar" id="splitBar"><i class="k" id="splitK" style="width:50%"></i><i class="h" id="splitH" style="width:50%"></i></div>
+    <div class="prows">
+      <div class="prow k">
+        <span class="pav k" id="avK"></span>
+        <span class="nm"><b>耕大</b><span id="cntK">0件</span></span>
+        <span class="amt" id="amtK">¥0</span>
+        <span class="pc" id="pcK">0%</span>
+      </div>
+      <div class="prow h">
+        <span class="pav h" id="avH"></span>
+        <span class="nm"><b>虹</b><span id="cntH">0件</span></span>
+        <span class="amt" id="amtH">¥0</span>
+        <span class="pc" id="pcH">0%</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="貯金を記録">
+    <h2>きょうの貯金を記録</h2>
+    <div class="seg" id="whoSeg" style="margin-top:10px">
+      <button type="button" data-who="koudai" class="on"><span class="pav k" data-av="koudai"></span>耕大</button>
+      <button type="button" data-who="hong"><span class="pav h" data-av="hong"></span>虹</button>
+    </div>
+    <div class="quick" id="quickGrid"></div>
+    <div class="freeform">
+      <div class="memo-row">
+        <label class="field">
+          <span class="pre">¥</span>
+          <input id="amountInput" type="text" inputmode="numeric" autocomplete="off" placeholder="金額を入力（自由）" aria-label="金額">
+        </label>
+        <button class="submit" id="submitBtn" type="button">記録</button>
+      </div>
+      <label class="field">
+        <input id="memoInput" type="text" maxlength="40" autocomplete="off" enterkeyhint="done" placeholder="メモ（例：給料日・メルカリ）" aria-label="メモ">
+      </label>
+    </div>
+  </section>
+
+  <section class="card" aria-label="これまでの記録">
+    <div class="hist-head">
+      <h2>これまでの記録 <span id="histCount" style="color:#bcab9c; font-weight:800;"></span></h2>
+      <button class="undo" id="undoBtn" type="button" disabled>↩ 1つ戻す</button>
+    </div>
+    <div id="histList"></div>
+  </section>
+
+  <p class="footnote">耕大さんと虹さんの記録は、端末のブラウザと<b>非公開のGitHub Gist</b>に保存されます。<br>同じURLを開けば、どちらのスマホからでも同じ貯金が見られます🐾</p>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="confetti" id="confetti" aria-hidden="true"></div>
+
+<div class="backdrop" id="settingsModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <h2 id="settingsTitle">⚙️ 設定</h2>
+    <p class="hint">目標金額とマイルストーンは、ふたりの共有データに保存されます。</p>
+
+    <div class="sec">
+      <h3>目標金額</h3>
+      <div class="goalrow">
+        <input id="goalInput" type="text" inputmode="numeric" aria-label="目標金額">
+        <span>円</span>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h3>マイルストーン</h3>
+      <div id="mileEditor"></div>
+      <button class="addmile" id="addMileBtn" type="button">＋ マイルストーンを追加</button>
+    </div>
+
+    <div class="sec">
+      <h3>☁️ GitHub自動同期（ふたりで共有）</h3>
+      <p class="hint" style="margin-bottom:8px">Gist IDとトークンを入れておくと、記録が自動でGitHubに保存され、虹さんのスマホからも同じデータが見られます。</p>
+      <div class="mrow"><input id="syncGistInput" type="text" placeholder="Gist ID" autocomplete="off" aria-label="Gist ID"></div>
+      <div class="mrow"><input id="syncTokenInput" type="password" placeholder="GitHub Token（Gist権限）" autocomplete="off" aria-label="GitHub Token"></div>
+      <div class="sync-actions">
+        <button type="button" id="syncPullBtn">⬇️ 取得</button>
+        <button type="button" id="syncPushBtn">⬆️ 保存</button>
+      </div>
+    </div>
+
+    <div class="mbtns">
+      <button class="cancel" id="settingsCloseBtn" type="button">閉じる</button>
+      <button class="ok" id="settingsSaveBtn" type="button">保存する</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  var STORAGE_KEY = 'moving-savings-v1';
+  var SYNC_KEY = 'moving-savings-sync-v1';
+  var SEL_KEY = 'moving-savings-who-v1';
+  var GIST_FILE = 'moving-savings.json';
+  var DEFAULT_GOAL = 400000;
+  var MEMO_MAX = 40;
+
+  var PEOPLE = {
+    koudai: { key:'koudai', name:'耕大', cls:'k' },
+    hong:   { key:'hong',   name:'虹',   cls:'h' }
+  };
+
+  var CORGI_AVATAR =
+    '<svg viewBox="0 0 80 80" aria-hidden="true">' +
+      '<path d="M13 34 C7 21 8 9 14 6 C22 10 30 19 33 29 Z" fill="#dd8b28"/>' +
+      '<path d="M67 34 C73 21 72 9 66 6 C58 10 50 19 47 29 Z" fill="#dd8b28"/>' +
+      '<ellipse cx="40" cy="45" rx="27" ry="24" fill="#f0a13c"/>' +
+      '<path d="M40 23 C34 32 34 42 36 53 L44 53 C46 42 46 32 40 23 Z" fill="#fff8ee"/>' +
+      '<ellipse cx="40" cy="55" rx="17" ry="12" fill="#fff8ee"/>' +
+      '<ellipse cx="29" cy="41" rx="3.9" ry="4.8" fill="#402617"/>' +
+      '<ellipse cx="51" cy="41" rx="3.9" ry="4.8" fill="#402617"/>' +
+      '<circle cx="30.2" cy="39.2" r="1.3" fill="#fff"/>' +
+      '<circle cx="52.2" cy="39.2" r="1.3" fill="#fff"/>' +
+      '<ellipse cx="40" cy="50.5" rx="4.6" ry="3.4" fill="#3b2416"/>' +
+      '<path d="M40 54.5 L40 57.5 M40 57.5 C37 61 33.5 60 32 58 M40 57.5 C43 61 46.5 60 48 58" stroke="#3b2416" stroke-width="1.9" fill="none" stroke-linecap="round"/>' +
+      '<path d="M36.6 62.5 Q40 67.5 43.4 62.5 Z" fill="#f47b93"/>' +
+    '</svg>';
+
+  var FLOWER_AVATAR =
+    '<svg viewBox="0 0 80 80" aria-hidden="true">' +
+      '<g transform="translate(40 40)">' +
+        '<g fill="#f7a8c4">' +
+          '<ellipse cx="0" cy="-17" rx="9" ry="13"/>' +
+          '<ellipse cx="16" cy="-5" rx="9" ry="13" transform="rotate(72 16 -5)"/>' +
+          '<ellipse cx="10" cy="15" rx="9" ry="13" transform="rotate(144 10 15)"/>' +
+          '<ellipse cx="-10" cy="15" rx="9" ry="13" transform="rotate(216 -10 15)"/>' +
+          '<ellipse cx="-16" cy="-5" rx="9" ry="13" transform="rotate(288 -16 -5)"/>' +
+        '</g>' +
+        '<circle cx="0" cy="0" r="10.5" fill="#fff1a8"/>' +
+        '<circle cx="-3.2" cy="-1.5" r="1.5" fill="#8a6a3a"/>' +
+        '<circle cx="3.2" cy="-1.5" r="1.5" fill="#8a6a3a"/>' +
+      '</g>' +
+    '</svg>';
+
+  function avatarFor(who){ return who === 'hong' ? FLOWER_AVATAR : CORGI_AVATAR; }
+
+  var state = { goal: DEFAULT_GOAL, goalAt: 0, milestones: [], msAt: 0, entries: [], deleted: [], updatedAt: 0 };
+  var syncCfg = { gistId: '', token: '' };
+  var selectedWho = 'koudai';
+  var undoStack = [];
+  var pushTimer = null, pushing = false, pushDirty = false;
+  var lastPullAt = 0;
+  var mileDraft = [];   // settings modal editing copy
+
+  /* ---------------- utils ---------------- */
+  function uid(){ return 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function num(v){ var n = parseInt(String(v).replace(/[^0-9-]/g, ''), 10); return isFinite(n) ? n : 0; }
+  function yen(n){ return '¥' + Number(n || 0).toLocaleString('ja-JP'); }
+  function yenPlain(n){ return Number(n || 0).toLocaleString('ja-JP'); }
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+  function buzz(ms){ if(navigator.vibrate){ try{ navigator.vibrate(ms || 10); }catch(e){} } }
+
+  function todayLocal(){ var d = new Date(); d.setHours(0,0,0,0); return d; }
+  function parseDate(s){
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || ''));
+    if(!m) return null;
+    var d = new Date(+m[1], +m[2]-1, +m[3]);
+    d.setHours(0,0,0,0);
+    return d;
+  }
+  function mdLabel(s){
+    var d = parseDate(s);
+    if(!d) return '';
+    return (d.getMonth()+1) + '/' + d.getDate();
+  }
+  function daysUntil(s){
+    var d = parseDate(s);
+    if(!d) return null;
+    return Math.round((d.getTime() - todayLocal().getTime()) / 86400000);
+  }
+  function hhmm(ms){
+    var d = new Date(ms);
+    return ('0'+d.getHours()).slice(-2) + ':' + ('0'+d.getMinutes()).slice(-2);
+  }
+  function dayLabel(ms){
+    var d = new Date(ms), t = todayLocal();
+    var dd = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    var diff = Math.round((t.getTime() - dd.getTime()) / 86400000);
+    var w = ['日','月','火','水','木','金','土'][dd.getDay()];
+    var base = (dd.getMonth()+1) + '月' + dd.getDate() + '日（' + w + '）';
+    if(diff === 0) return '今日 ' + base;
+    if(diff === 1) return '昨日 ' + base;
+    return base;
+  }
+  function dayKey(ms){ var d = new Date(ms); return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate(); }
+
+  /* ---------------- state & storage ---------------- */
+  function normalize(data){
+    var out = { goal: DEFAULT_GOAL, goalAt: 0, milestones: [], msAt: 0, entries: [], deleted: [], updatedAt: 0 };
+    if(!data || typeof data !== 'object') return out;
+    var g = num(data.goal);
+    if(g > 0) out.goal = g;
+    out.goalAt = num(data.goalAt);
+    out.msAt = num(data.msAt);
+    out.updatedAt = num(data.updatedAt);
+    if(Array.isArray(data.milestones)){
+      out.milestones = data.milestones.filter(function(m){
+        return m && parseDate(m.date);
+      }).map(function(m){
+        return { id: (typeof m.id === 'string' && m.id) ? m.id : uid(), date: m.date, label: String(m.label || '').slice(0, 24) };
+      });
+    }
+    if(Array.isArray(data.deleted)){
+      out.deleted = data.deleted.filter(function(x){ return typeof x === 'string'; });
+    }
+    if(Array.isArray(data.entries)){
+      out.entries = data.entries.filter(function(e){
+        return e && typeof e.id === 'string' && PEOPLE[e.who] && num(e.amount) > 0;
+      }).map(function(e){
+        return {
+          id: e.id,
+          who: e.who,
+          amount: num(e.amount),
+          memo: String(e.memo || '').slice(0, MEMO_MAX),
+          at: num(e.at) || Date.now()
+        };
+      }).sort(function(a,b){ return a.at - b.at; });
+    }
+    return out;
+  }
+
+  function loadLocal(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
+      state = normalize(JSON.parse(raw));
+    }catch(e){}
+  }
+
+  function snapshot(){
+    return { v:1, updatedAt: state.updatedAt || Date.now(), goal: state.goal, goalAt: state.goalAt,
+             milestones: state.milestones, msAt: state.msAt, entries: state.entries, deleted: state.deleted };
+  }
+
+  function saveLocalOnly(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot())); }catch(e){}
+  }
+
+  function save(){
+    state.updatedAt = Date.now();
+    saveLocalOnly();
+    schedulePush();
+  }
+
+  /* ---------------- merge (two phones) ---------------- */
+  function mergeStates(a, b){
+    var gone = {};
+    (a.deleted || []).concat(b.deleted || []).forEach(function(id){ gone[id] = true; });
+    var map = {};
+    (a.entries || []).concat(b.entries || []).forEach(function(e){
+      if(!e || !e.id) return;
+      var prev = map[e.id];
+      if(!prev || (e.at||0) > (prev.at||0)) map[e.id] = e;
+    });
+    var entries = Object.keys(map).map(function(k){ return map[k]; })
+      .filter(function(e){ return !gone[e.id]; })
+      .sort(function(x,y){ return (x.at||0) - (y.at||0); });
+
+    var goal = a.goal, goalAt = a.goalAt || 0;
+    if((b.goalAt || 0) > goalAt){ goal = b.goal; goalAt = b.goalAt; }
+
+    var milestones = a.milestones || [], msAt = a.msAt || 0;
+    if((b.msAt || 0) > msAt){ milestones = b.milestones || []; msAt = b.msAt; }
+
+    return {
+      goal: goal || DEFAULT_GOAL, goalAt: goalAt,
+      milestones: milestones, msAt: msAt,
+      entries: entries, deleted: Object.keys(gone),
+      updatedAt: Math.max(a.updatedAt || 0, b.updatedAt || 0)
+    };
+  }
+
+  function signature(s){
+    return JSON.stringify({
+      g: s.goal,
+      m: (s.milestones || []).map(function(x){ return [x.id, x.date, x.label]; }).sort(),
+      e: (s.entries || []).map(function(e){ return [e.id, e.who, e.amount, e.memo, e.at]; }).sort(),
+      d: (s.deleted || []).slice().sort()
+    });
+  }
+
+  /* ---------------- sync ---------------- */
+  function setSyncStatus(kind, text){
+    el.syncStatus.className = 'sync-status' + (kind ? ' ' + kind : '');
+    el.syncStatus.textContent = text;
+  }
+  function hasSync(){ return !!(syncCfg.gistId && syncCfg.token); }
+
+  function saveSyncConfig(){
+    try{
+      if(hasSync()) localStorage.setItem(SYNC_KEY, JSON.stringify(syncCfg));
+      else localStorage.removeItem(SYNC_KEY);
+    }catch(e){}
+    if(hasSync()){
+      var h = '#gist=' + encodeURIComponent(syncCfg.gistId) + '&token=' + encodeURIComponent(syncCfg.token);
+      if(location.hash !== h){ try{ history.replaceState(null, '', h); }catch(e){} }
+    }
+  }
+
+  function initSyncConfig(){
+    var hash = (location.hash || '').replace(/^#/, '');
+    if(hash){
+      var params = {};
+      hash.split('&').forEach(function(part){
+        var i = part.indexOf('=');
+        if(i > 0) params[decodeURIComponent(part.slice(0,i))] = decodeURIComponent(part.slice(i+1));
+      });
+      if(params.gist && params.token){
+        syncCfg.gistId = params.gist.trim();
+        syncCfg.token = params.token.trim();
+        saveSyncConfig();
+        return;
+      }
+    }
+    try{
+      var raw = localStorage.getItem(SYNC_KEY);
+      if(raw){
+        var c = JSON.parse(raw);
+        if(c && c.gistId && c.token){
+          syncCfg.gistId = String(c.gistId).trim();
+          syncCfg.token = String(c.token).trim();
+          saveSyncConfig();
+        }
+      }
+    }catch(e){}
+  }
+
+  function mergeIntoState(merged){
+    state.goal = merged.goal;
+    state.goalAt = merged.goalAt;
+    state.milestones = merged.milestones;
+    state.msAt = merged.msAt;
+    state.entries = merged.entries;
+    state.deleted = merged.deleted;
+    state.updatedAt = merged.updatedAt || Date.now();
+  }
+
+  function pullSync(silent){
+    if(!hasSync()){ setSyncStatus('', '☁️ GitHub未連携'); return Promise.resolve(false); }
+    setSyncStatus('busy', '☁️ GitHubから読み込み中…');
+    lastPullAt = Date.now();
+    return fetch('https://api.github.com/gists/' + encodeURIComponent(syncCfg.gistId) + '?t=' + Date.now(), {
+      method:'GET', cache:'no-store',
+      headers:{ 'Authorization':'Bearer ' + syncCfg.token, 'Accept':'application/vnd.github+json' }
+    }).then(function(r){
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function(gist){
+      var file = gist && gist.files && gist.files[GIST_FILE];
+      var remote = { goal: DEFAULT_GOAL, goalAt: 0, milestones: [], msAt: 0, entries: [], deleted: [], updatedAt: 0 };
+      if(file && file.content){
+        try{ remote = normalize(JSON.parse(file.content)); }catch(e){ remote = normalize(null); }
+      }
+      var before = signature(state);
+      var merged = mergeStates(state, remote);
+      mergeIntoState(merged);
+      saveLocalOnly();
+      renderAll();
+      if(signature(merged) !== signature(normalize(remote))){
+        // 手元の記録（または相手の記録）を統合したのでGitHub側もそろえる
+        pushSync(true);
+        setSyncStatus('busy', '☁️ GitHubへ統合中…');
+      }else{
+        setSyncStatus('ok', '☁️ GitHub同期済み');
+      }
+      if(!silent){
+        if(signature(merged) !== before) toast('GitHubから最新の記録を読み込みました');
+        else toast('最新です（変更なし）');
+      }
+      return true;
+    }).catch(function(){
+      setSyncStatus('err', '⚠️ 同期エラー（同期設定を確認）');
+      if(!silent) toast('GitHubからの読み込みに失敗しました');
+      return false;
+    });
+  }
+
+  function pushSync(silent){
+    if(!hasSync()) return Promise.resolve(false);
+    if(pushing){ pushDirty = true; return Promise.resolve(false); }
+    pushing = true; pushDirty = false;
+    setSyncStatus('busy', '☁️ GitHubへ保存中…');
+    var body = { files: {} };
+    body.files[GIST_FILE] = { content: JSON.stringify(snapshot(), null, 2) };
+    return fetch('https://api.github.com/gists/' + encodeURIComponent(syncCfg.gistId), {
+      method:'PATCH',
+      headers:{ 'Authorization':'Bearer ' + syncCfg.token, 'Accept':'application/vnd.github+json', 'Content-Type':'application/json' },
+      body: JSON.stringify(body)
+    }).then(function(r){
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      setSyncStatus('ok', '☁️ GitHub保存済み');
+      if(!silent) toast('GitHubへ保存しました');
+      return true;
+    }).catch(function(){
+      setSyncStatus('err', '⚠️ 保存失敗（同期設定で再試行）');
+      if(!silent) toast('GitHubへの保存に失敗しました');
+      return false;
+    }).finally(function(){
+      pushing = false;
+      if(pushDirty){ pushDirty = false; pushSync(true); }
+    });
+  }
+
+  function schedulePush(){
+    if(!hasSync()) return;
+    setSyncStatus('busy', '☁️ GitHubへ保存中…');
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(function(){ pushSync(true); }, 500);
+  }
+
+  /* ---------------- totals ---------------- */
+  function totals(){
+    var t = { all:0, koudai:0, hong:0, cntK:0, cntH:0 };
+    state.entries.forEach(function(e){
+      t.all += e.amount;
+      if(e.who === 'hong'){ t.hong += e.amount; t.cntH++; }
+      else { t.koudai += e.amount; t.cntK++; }
+    });
+    t.pct = state.goal > 0 ? Math.min(100, t.all / state.goal * 100) : 0;
+    t.remain = Math.max(0, state.goal - t.all);
+    return t;
+  }
+
+  /* ---------------- actions ---------------- */
+  function addEntry(who, amount, memo){
+    if(!PEOPLE[who]) return null;
+    amount = Math.round(amount);
+    if(!(amount > 0)) return null;
+    var e = { id: uid(), who: who, amount: amount, memo: String(memo || '').trim().slice(0, MEMO_MAX), at: Date.now() };
+    state.entries.push(e);
+    state.entries.sort(function(a,b){ return a.at - b.at; });
+    undoStack.push({ type:'add', id:e.id });
+    if(undoStack.length > 50) undoStack.shift();
+    save();
+    renderAll();
+    celebrateIfNeeded();
+    buzz(12);
+    return e;
+  }
+
+  function deleteEntry(id, silent){
+    var i = -1;
+    for(var k = 0; k < state.entries.length; k++){ if(state.entries[k].id === id){ i = k; break; } }
+    if(i < 0) return false;
+    var e = state.entries.splice(i, 1)[0];
+    if(state.deleted.indexOf(id) < 0) state.deleted.push(id);
+    if(!silent){
+      undoStack.push({ type:'del', entry:e });
+      if(undoStack.length > 50) undoStack.shift();
+    }
+    save();
+    renderAll();
+    return true;
+  }
+
+  function undoLast(){
+    var a = undoStack.pop();
+    if(!a) return null;
+    if(a.type === 'add'){
+      for(var i = 0; i < state.entries.length; i++){
+        if(state.entries[i].id === a.id){
+          var e = state.entries[i];
+          deleteEntry(a.id, true);
+          return PEOPLE[e.who].name + 'の ' + yen(e.amount) + ' を取り消しました';
+        }
+      }
+      return '取り消す記録が見つかりませんでした';
+    }
+    if(a.type === 'del'){
+      var idx = state.deleted.indexOf(a.entry.id);
+      if(idx >= 0) state.deleted.splice(idx, 1);
+      state.entries.push(a.entry);
+      state.entries.sort(function(x,y){ return x.at - y.at; });
+      save(); renderAll();
+      return PEOPLE[a.entry.who].name + 'の ' + yen(a.entry.amount) + ' を元に戻しました';
+    }
+    return null;
+  }
+
+  /* ---------------- celebrations ---------------- */
+  var celebrated = {};
+  function celebrateIfNeeded(){
+    var t = totals();
+    var marks = [25, 50, 75, 100];
+    for(var i = 0; i < marks.length; i++){
+      var m = marks[i];
+      if(t.pct >= m && !celebrated[m]){
+        celebrated[m] = true;
+        if(m === 100){ toast('🎉 40万円達成！おふたりでおうちゲット🐶🏠'); }
+        else { toast('🎉 達成率 ' + m + '% 突破！いいペースです🐾'); }
+        confetti();
+        return;
+      }
+    }
+  }
+
+  function confetti(){
+    var box = el.confetti;
+    var emojis = ['🐾','🏠','💰','🐶','🌸','✨'];
+    for(var i = 0; i < 14; i++){
+      var s = document.createElement('i');
+      s.textContent = emojis[i % emojis.length];
+      s.style.left = Math.random() * 100 + '%';
+      s.style.animationDuration = (1.6 + Math.random() * 1.2) + 's';
+      s.style.animationDelay = (Math.random() * 0.3) + 's';
+      s.style.fontSize = (13 + Math.random() * 10) + 'px';
+      box.appendChild(s);
+      (function(node){ setTimeout(function(){ if(node.parentNode) node.parentNode.removeChild(node); }, 3200); })(s);
+    }
+  }
+
+  /* ---------------- rendering ---------------- */
+  var el = {};
+  ['settingsBtn','syncStatus','syncRefreshBtn','syncCfgBtn','ringArc','pctText','totalText','goalText',
+   'remainBox','remainText','mileRow','paceLine','splitBar','splitK','splitH','avK','avH','cntK','cntH','amtK','amtH','pcK','pcH',
+   'whoSeg','quickGrid','amountInput','memoInput','submitBtn','histCount','undoBtn','histList',
+   'toast','confetti','settingsModal','goalInput','mileEditor','addMileBtn','syncGistInput','syncTokenInput',
+   'syncPullBtn','syncPushBtn','settingsCloseBtn','settingsSaveBtn'].forEach(function(id){
+    el[id] = document.getElementById(id);
+  });
+
+  var QUICK = [1000, 5000, 10000, 30000, 50000];
+
+  function personCls(who){ return who === 'hong' ? 'h' : 'k'; }
+
+  function renderHero(){
+    var t = totals();
+    el.totalText.textContent = yenPlain(t.all);
+    el.goalText.textContent = yenPlain(state.goal);
+    el.pctText.textContent = t.all === 0 ? '0' : (t.pct >= 100 ? '100' : (t.pct >= 10 ? Math.floor(t.pct) : t.pct.toFixed(1)));
+    var C = 314.16;
+    el.ringArc.setAttribute('stroke-dashoffset', String(C - C * (t.pct / 100)));
+    el.ringArc.setAttribute('stroke', t.pct >= 100 ? 'url(#ringGradDone)' : 'url(#ringGrad)');
+
+    if(t.remain > 0){
+      el.remainBox.classList.remove('done');
+      el.remainBox.innerHTML = 'あと <span id="remainText">' + yenPlain(t.remain) + '</span> 円！';
+    }else{
+      el.remainBox.classList.add('done');
+      el.remainBox.innerHTML = '🎉 目標達成！ + ' + yenPlain(t.all - state.goal) + ' 円';
+    }
+
+    // milestones
+    var ms = (state.milestones || []).slice().filter(function(m){ return parseDate(m.date); })
+      .sort(function(a,b){ return parseDate(a.date) - parseDate(b.date); });
+    var html = '';
+    ms.forEach(function(m){
+      var d = daysUntil(m.date);
+      var chip = (m.label ? esc(m.label) + ' ' : '') + mdLabel(m.date) + (d !== null && d >= 0 ? ' <i>あと' + d + '日</i>' : (d !== null ? ' <i>終了</i>' : ''));
+      html += '<span class="mile">📅 ' + chip + '</span>';
+    });
+    el.mileRow.innerHTML = html;
+    el.mileRow.style.display = html ? '' : 'none';
+
+    // pace to next upcoming milestone
+    var next = null;
+    for(var i = 0; i < ms.length; i++){
+      var dd = daysUntil(ms[i].date);
+      if(dd !== null && dd >= 0){ next = { m:ms[i], d:dd }; break; }
+    }
+    if(t.remain > 0 && next && next.d > 0){
+      var perDay = Math.ceil(t.remain / Math.max(1, next.d + 1) / 100) * 100;
+      el.paceLine.innerHTML = (next.m.label ? esc(next.m.label) : mdLabel(next.m.date) + 'の予定') +
+        'まで<b>あと' + next.d + '日</b> → 1日あたり約 <b>' + yen(perDay) + '</b> ペース';
+      el.paceLine.style.display = '';
+    }else{
+      el.paceLine.style.display = 'none';
+    }
+  }
+
+  function renderSplit(){
+    var t = totals();
+    var denom = t.all > 0 ? t.all : 1;
+    var pk = t.all > 0 ? (t.koudai / denom * 100) : 50;
+    var ph = t.all > 0 ? (t.hong / denom * 100) : 50;
+    el.splitK.style.width = pk + '%';
+    el.splitH.style.width = ph + '%';
+    el.amtK.textContent = yen(t.koudai);
+    el.amtH.textContent = yen(t.hong);
+    el.cntK.textContent = t.cntK + '件';
+    el.cntH.textContent = t.cntH + '件';
+    el.pcK.textContent = t.all > 0 ? Math.round(pk) + '%' : '—%';
+    el.pcH.textContent = t.all > 0 ? Math.round(ph) + '%' : '—%';
+  }
+
+  function renderQuick(){
+    var cls = personCls(selectedWho);
+    var html = '';
+    QUICK.forEach(function(v){
+      html += '<button class="qbtn ' + cls + '" type="button" data-add="' + v + '">＋' + yenPlain(v) + '</button>';
+    });
+    el.quickGrid.innerHTML = html;
+    el.submitBtn.className = 'submit' + (selectedWho === 'hong' ? ' h' : '');
+    Array.prototype.forEach.call(el.whoSeg.querySelectorAll('button'), function(b){
+      b.classList.toggle('on', b.getAttribute('data-who') === selectedWho);
+    });
+  }
+
+  function renderHistory(){
+    var list = state.entries.slice().sort(function(a,b){ return b.at - a.at; });
+    el.histCount.textContent = list.length ? '（' + list.length + '件）' : '';
+    el.undoBtn.disabled = undoStack.length === 0;
+    if(!list.length){
+      el.histList.innerHTML = '<div class="empty"><b>まだ記録がありません</b>上のボタンで、きょうの貯金をぽんっと記録してみてください🐾</div>';
+      return;
+    }
+    var groups = [], cur = null;
+    list.forEach(function(e){
+      var k = dayKey(e.at);
+      if(!cur || cur.k !== k){ cur = { k:k, at:e.at, items:[] }; groups.push(cur); }
+      cur.items.push(e);
+    });
+    var html = '';
+    groups.forEach(function(g){
+      var dayTotal = 0;
+      g.items.forEach(function(x){ dayTotal += x.amount; });
+      var rows = '';
+      g.items.forEach(function(e){
+        var p = PEOPLE[e.who];
+        rows += '<div class="erow ' + personCls(e.who) + '" data-id="' + e.id + '">' +
+            '<span class="pav ' + personCls(e.who) + '">' + avatarFor(e.who) + '</span>' +
+            '<div class="mid"><div class="who">' + esc(p.name) + '</div>' +
+              '<div class="memo">' + (e.memo ? esc(e.memo) : '—') + '</div></div>' +
+            '<span class="val add">' + yen(e.amount) + '</span>' +
+            '<span class="time">' + hhmm(e.at) + '</span>' +
+            '<button class="del" type="button" data-del="' + e.id + '" aria-label="この記録を削除">×</button>' +
+          '</div>';
+      });
+      html += '<div class="daygroup"><div class="daylabel">' + esc(dayLabel(g.at)) +
+              '<span>' + yen(dayTotal) + '</span></div>' + rows + '</div>';
+    });
+    el.histList.innerHTML = html;
+  }
+
+  function renderAll(){
+    renderHero();
+    renderSplit();
+    renderQuick();
+    renderHistory();
+  }
+
+  var toastTimer = null;
+  function toast(msg){
+    el.toast.textContent = msg;
+    el.toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ el.toast.classList.remove('show'); }, 2200);
+  }
+
+  /* ---------------- settings modal ---------------- */
+  function openSettings(){
+    el.goalInput.value = yenPlain(state.goal);
+    mileDraft = state.milestones.map(function(m){ return { id:m.id, date:m.date, label:m.label }; });
+    renderMileEditor();
+    el.syncGistInput.value = syncCfg.gistId || '';
+    el.syncTokenInput.value = syncCfg.token || '';
+    el.settingsModal.hidden = false;
+  }
+  function closeSettings(){ el.settingsModal.hidden = true; }
+
+  function renderMileEditor(){
+    var html = mileDraft.map(function(m, i){
+      return '<div class="mrow" data-i="' + i + '">' +
+          '<input type="date" value="' + esc(m.date) + '" data-mile-date="' + i + '">' +
+          '<input type="text" value="' + esc(m.label) + '" maxlength="24" placeholder="内見予定" data-mile-label="' + i + '">' +
+          '<button class="xbtn" type="button" data-mile-del="' + i + '">×</button>' +
+        '</div>';
+    }).join('');
+    el.mileEditor.innerHTML = html || '<p class="hint" style="margin:0 0 6px">まだありません。</p>';
+  }
+
+  el.mileEditor.addEventListener('input', function(e){
+    var t = e.target;
+    if(t.getAttribute && t.getAttribute('data-mile-label') !== null){
+      var i = +t.getAttribute('data-mile-label');
+      if(mileDraft[i]) mileDraft[i].label = t.value;
+    }
+    if(t.getAttribute && t.getAttribute('data-mile-date') !== null){
+      var j = +t.getAttribute('data-mile-date');
+      if(mileDraft[j]) mileDraft[j].date = t.value;
+    }
+  });
+  el.mileEditor.addEventListener('click', function(e){
+    var b = e.target.closest('button[data-mile-del]');
+    if(!b) return;
+    var i = +b.getAttribute('data-mile-del');
+    mileDraft.splice(i, 1);
+    renderMileEditor();
+  });
+  el.addMileBtn.addEventListener('click', function(){
+    var d = new Date(); d.setDate(d.getDate() + 30);
+    var iso = d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2);
+    mileDraft.push({ id: uid(), date: iso, label: '' });
+    renderMileEditor();
+  });
+
+  el.settingsSaveBtn.addEventListener('click', function(){
+    var g = num(el.goalInput.value);
+    if(g > 0 && g !== state.goal){
+      state.goal = g;
+      state.goalAt = Date.now();
+      celebrated = {};
+    }
+    state.milestones = mileDraft.filter(function(m){ return parseDate(m.date); });
+    state.msAt = Date.now();
+    syncCfg.gistId = el.syncGistInput.value.trim();
+    syncCfg.token = el.syncTokenInput.value.trim();
+    saveSyncConfig();
+    save();
+    renderAll();
+    closeSettings();
+    toast('設定を保存しました');
+    if(hasSync()) pullSync(true);
+    else setSyncStatus('', '☁️ GitHub未連携');
+  });
+
+  /* ---------------- wiring ---------------- */
+  el.settingsBtn.addEventListener('click', openSettings);
+  el.settingsCloseBtn.addEventListener('click', closeSettings);
+  el.settingsModal.addEventListener('click', function(e){ if(e.target === el.settingsModal) closeSettings(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && !el.settingsModal.hidden) closeSettings(); });
+
+  el.whoSeg.addEventListener('click', function(e){
+    var b = e.target.closest('button[data-who]');
+    if(!b) return;
+    selectedWho = b.getAttribute('data-who');
+    try{ localStorage.setItem(SEL_KEY, selectedWho); }catch(err){}
+    renderQuick();
+    buzz(8);
+  });
+
+  function addQuick(amount){
+    var memo = el.memoInput.value.trim();
+    var e = addEntry(selectedWho, amount, memo);
+    if(!e) return;
+    el.memoInput.value = '';
+    toast(PEOPLE[e.who].name + 'に ' + yen(e.amount) + ' を追加しました' + (e.memo ? '（' + e.memo + '）' : ''));
+  }
+
+  el.quickGrid.addEventListener('click', function(e){
+    var b = e.target.closest('button[data-add]');
+    if(!b) return;
+    addQuick(+b.getAttribute('data-add'));
+  });
+
+  el.submitBtn.addEventListener('click', function(){
+    var a = num(el.amountInput.value);
+    if(!(a > 0)){ toast('金額を入れてください'); el.amountInput.focus(); return; }
+    if(a > 10000000){ toast('金額が大きすぎます'); return; }
+    var e = addEntry(selectedWho, a, el.memoInput.value.trim());
+    if(!e) return;
+    el.amountInput.value = '';
+    el.memoInput.value = '';
+    toast(PEOPLE[e.who].name + 'に ' + yen(e.amount) + ' を追加しました' + (e.memo ? '（' + e.memo + '）' : ''));
+  });
+
+  el.amountInput.addEventListener('input', function(){
+    var raw = el.amountInput.value.replace(/[^0-9]/g, '');
+    el.amountInput.value = raw ? Number(raw).toLocaleString('ja-JP') : '';
+  });
+  el.amountInput.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); el.submitBtn.click(); } });
+  el.memoInput.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); el.memoInput.blur(); } });
+
+  el.histList.addEventListener('click', function(e){
+    var b = e.target.closest('button[data-del]');
+    if(!b) return;
+    var id = b.getAttribute('data-del');
+    if(deleteEntry(id)){
+      toast('記録を削除しました（↩1つ戻すで戻せます）');
+    }
+  });
+
+  el.undoBtn.addEventListener('click', function(){
+    var msg = undoLast();
+    if(msg) toast(msg);
+  });
+
+  el.syncRefreshBtn.addEventListener('click', function(){ pullSync(false); });
+  el.syncCfgBtn.addEventListener('click', openSettings);
+  el.syncStatus.addEventListener('click', function(){
+    if(hasSync() && el.syncStatus.classList.contains('err')) pushSync(false);
+    else openSettings();
+  });
+  el.syncPullBtn.addEventListener('click', function(){
+    syncCfg.gistId = el.syncGistInput.value.trim();
+    syncCfg.token = el.syncTokenInput.value.trim();
+    if(!hasSync()){ toast('Gist IDとトークンを入れてください'); return; }
+    saveSyncConfig();
+    closeSettings();
+    pullSync(false);
+  });
+  el.syncPushBtn.addEventListener('click', function(){
+    syncCfg.gistId = el.syncGistInput.value.trim();
+    syncCfg.token = el.syncTokenInput.value.trim();
+    if(!hasSync()){ toast('Gist IDとトークンを入れてください'); return; }
+    saveSyncConfig();
+    closeSettings();
+    state.updatedAt = Date.now();
+    saveLocalOnly();
+    pushSync(false);
+  });
+
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState === 'visible' && hasSync() && Date.now() - lastPullAt > 20000){
+      pullSync(true);
+    }
+  });
+  window.addEventListener('online', function(){ if(hasSync()) pullSync(true); });
+
+  /* ---------------- init ---------------- */
+  document.querySelectorAll('.pav[data-av]').forEach(function(n){
+    n.innerHTML = avatarFor(n.getAttribute('data-av'));
+  });
+  el.avK.innerHTML = CORGI_AVATAR;
+  el.avH.innerHTML = FLOWER_AVATAR;
+
+  try{
+    var sel = localStorage.getItem(SEL_KEY);
+    if(sel && PEOPLE[sel]) selectedWho = sel;
+  }catch(e){}
+
+  initSyncConfig();
+  loadLocal();
+  renderAll();
+  if(hasSync()) pullSync(true);
+  else setSyncStatus('', '☁️ GitHub未連携');
+
+  // テスト・デバッグ用（画面には影響しません）
+  window.__savings = {
+    state: state,
+    addEntry: addEntry,
+    deleteEntry: deleteEntry,
+    undoLast: undoLast,
+    totals: totals,
+    mergeStates: mergeStates,
+    signature: signature,
+    pushSync: pushSync,
+    pullSync: pullSync,
+    renderAll: renderAll
+  };
+})();
+</script>
+</body>
+</html>
